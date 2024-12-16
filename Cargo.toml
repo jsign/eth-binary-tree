@@ -1,0 +1,3 @@
+[workspace]
+members = ["binary-tree"]
+resolver = "2"

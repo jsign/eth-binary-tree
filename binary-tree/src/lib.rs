@@ -1,14 +1,6 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+const KEY_LENGTH: usize = 32;
+const VALUE_LENGTH: usize = 32;
+const STEM_SUBTREE_WIDTH: usize = 256;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub mod hasher;
+pub mod types;

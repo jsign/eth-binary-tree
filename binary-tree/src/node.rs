@@ -15,3 +15,9 @@ pub enum Node {
     },
     Empty,
 }
+
+impl Node {
+    fn get_bit(stem: &[u8], depth: u8) -> u8 {
+        stem[depth as usize / 8] & (1 << (7 - depth % 8))
+    }
+}

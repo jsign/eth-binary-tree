@@ -31,7 +31,30 @@ impl Node {
                 todo!("todo")
             }
             Node::Internal { left, right } => {
-                todo!("todo")
+                let new_bit = Self::get_bit(&key.stem(), depth);
+                if new_bit == 0 {
+                    if let Some(left) = left {
+                        left.insert(key, value, depth + 1);
+                    } else {
+                        let mut new_values = [None; STEM_SUBTREE_WIDTH];
+                        new_values[key.subindex()] = Some(value);
+                        *left = Some(Box::new(Node::Stem {
+                            stem: key.stem(),
+                            values: Box::new(new_values),
+                        }));
+                    }
+                } else if let Some(right) = right {
+                    right.insert(key, value, depth + 1);
+                } else {
+                    let mut new_values = [None; STEM_SUBTREE_WIDTH];
+                    new_values[key.subindex()] = Some(value);
+                    if let Node::Internal { right, .. } = self {
+                        *right = Some(Box::new(Node::Stem {
+                            stem: key.stem(),
+                            values: Box::new(new_values),
+                        }));
+                    }
+                }
             }
         }
     }

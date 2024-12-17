@@ -107,4 +107,33 @@ impl Node {
     fn get_bit(stem: &[u8], depth: u8) -> u8 {
         stem[depth as usize / 8] & (1 << (7 - depth % 8))
     }
+
+    pub fn merkelize<H: Hasher>(&self) -> H::Hash {
+        match self {
+            Node::Stem { stem, values } => {
+                let mut level: [H::Hash; STEM_SUBTREE_WIDTH] = [H::zero(); STEM_SUBTREE_WIDTH];
+
+                for (i, x) in values.iter().enumerate() {
+                    level[i] = match x {
+                        Some(val) => H::hash_value(val),
+                        None => H::zero(),
+                    };
+                }
+                let mut level_length = level.len();
+                while level_length > 1 {
+                    for i in (0..level.len()).step_by(2) {
+                        level[i] = H::merkelize(level[i], level[i + 1]);
+                    }
+                    level_length /= 2;
+                }
+                H::merkelize(H::encode(stem), level[0])
+            }
+            Node::Internal { left, right } => {
+                let left_hash = left.as_ref().map_or(H::zero(), |l| l.merkelize::<H>());
+                let right_hash = right.as_ref().map_or(H::zero(), |r| r.merkelize::<H>());
+                H::merkelize(left_hash, right_hash)
+            }
+            Node::Empty => H::zero(),
+        }
+    }
 }

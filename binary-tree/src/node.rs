@@ -28,7 +28,52 @@ impl Node {
                 };
             }
             Node::Stem { stem, values } => {
-                todo!("todo")
+                if *stem == key.stem() {
+                    values[key.subindex()] = Some(value);
+                } else {
+                    let existing_stem = Node::Stem {
+                        stem: *stem,
+                        values: values.clone(),
+                    };
+                    let existing_bit = Node::get_bit(stem, depth);
+                    let new_bit = Node::get_bit(&key.stem(), depth);
+                    if existing_bit != new_bit {
+                        let mut new_stem_values = [None; STEM_SUBTREE_WIDTH];
+                        new_stem_values[key.subindex()] = Some(value);
+                        let new_stem = Node::Stem {
+                            stem: key.stem(),
+                            values: Box::new(new_stem_values),
+                        };
+
+                        if existing_bit == 0 {
+                            *self = Node::Internal {
+                                left: Some(Box::new(existing_stem)),
+                                right: Some(Box::new(new_stem)),
+                            };
+                        } else {
+                            *self = Node::Internal {
+                                left: Some(Box::new(new_stem)),
+                                right: Some(Box::new(existing_stem)),
+                            };
+                        }
+                    } else if existing_bit == 0 {
+                        *self = Node::Internal {
+                            left: Some(Box::new(existing_stem)),
+                            right: None,
+                        };
+                        if let Node::Internal { left, .. } = self {
+                            left.as_mut().unwrap().insert(key, value, depth + 1);
+                        }
+                    } else {
+                        *self = Node::Internal {
+                            left: None,
+                            right: Some(Box::new(existing_stem)),
+                        };
+                        if let Node::Internal { right, .. } = self {
+                            right.as_mut().unwrap().insert(key, value, depth + 1);
+                        }
+                    }
+                }
             }
             Node::Internal { left, right } => {
                 let new_bit = Self::get_bit(&key.stem(), depth);

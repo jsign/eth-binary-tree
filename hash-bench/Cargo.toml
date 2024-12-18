@@ -1,0 +1,15 @@
+[package]
+name = "hash-bench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+blake3 = "1.5.5"
+tiny-keccak = { version = "2.0.2", features = ["keccak"] }
+
+[dev-dependencies]
+criterion = "0.5.1"
+
+[[bench]]
+name = "hashes"
+harness = false

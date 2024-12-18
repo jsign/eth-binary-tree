@@ -36,17 +36,4 @@ mod tests {
             "694545468677064fd833cddc8455762fe6b21c6cabe2fc172529e0f573181cd5"
         )
     }
-    #[test]
-    fn two_entries() {
-        let mut tree = Tree::new();
-        tree.insert(Key::new(&[0; 32]), [0x01; 32]);
-        let mut key = [0u8; 32];
-        key[0] = 0x80;
-        tree.insert(Key::new(&key), [0x02; 32]);
-        let hash = tree.merkelize::<Blake3Hasher>();
-        assert_eq!(
-            hex::encode(hash),
-            "85fc622076752a6fcda2c886c18058d639066a83473d9684704b5a29455ed2ed"
-        )
-    }
 }

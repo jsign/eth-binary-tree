@@ -4,25 +4,25 @@ use crate::{
     types::{Key, Value},
 };
 
-pub struct Tree {
-    root: Node,
+pub struct Tree<H: Hasher> {
+    root: Node<H>,
 }
 
-impl Tree {
+impl<H: Hasher> Tree<H> {
     pub fn new() -> Self {
-        Tree { root: Node::Empty }
+        Self { root: Node::Empty }
     }
 
     pub fn insert(&mut self, key: Key, value: Value) {
         self.root.insert(key, value, 0);
     }
 
-    pub fn merkelize<H: Hasher>(&self) -> H::Hash {
-        self.root.merkelize::<H>()
+    pub fn merkelize(&self) -> H::Hash {
+        self.root.merkelize()
     }
 }
 
-impl Default for Tree {
+impl<H: Hasher> Default for Tree<H> {
     fn default() -> Self {
         Self::new()
     }

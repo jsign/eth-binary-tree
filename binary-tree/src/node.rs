@@ -4,19 +4,21 @@ use crate::{
     KEY_LENGTH, STEM_SUBTREE_WIDTH,
 };
 
-pub enum Node {
+pub enum Node<H: Hasher> {
     Stem {
         stem: [u8; KEY_LENGTH - 1],
         values: Box<[Option<Value>; STEM_SUBTREE_WIDTH]>,
     },
     Internal {
-        left: Option<Box<Node>>,
-        right: Option<Box<Node>>,
+        left: Option<Box<Self>>,
+        right: Option<Box<Self>>,
     },
     Empty,
+    #[allow(dead_code)]
+    HashedSubtree(H::Hash),
 }
 
-impl Node {
+impl<H: Hasher> Node<H> {
     pub fn insert(&mut self, key: Key, value: Value, depth: u8) {
         match self {
             Node::Empty => {
@@ -35,8 +37,8 @@ impl Node {
                         stem: *stem,
                         values: values.clone(),
                     };
-                    let existing_bit = Node::get_bit(stem, depth);
-                    let new_bit = Node::get_bit(&key.stem(), depth);
+                    let existing_bit = Self::get_bit(stem, depth);
+                    let new_bit = Self::get_bit(&key.stem(), depth);
                     if existing_bit != new_bit {
                         let mut new_stem_values = [None; STEM_SUBTREE_WIDTH];
                         new_stem_values[key.subindex()] = Some(value);
@@ -101,6 +103,9 @@ impl Node {
                     }
                 }
             }
+            Node::HashedSubtree(_) => {
+                todo!("handle HashedSubtree in insert")
+            }
         }
     }
 
@@ -108,7 +113,7 @@ impl Node {
         stem[depth as usize / 8] & (1 << (7 - depth % 8))
     }
 
-    pub fn merkelize<H: Hasher>(&self) -> H::Hash {
+    pub fn merkelize(&self) -> H::Hash {
         match self {
             Node::Stem { stem, values } => {
                 let mut level: [H::Hash; STEM_SUBTREE_WIDTH] = [H::zero(); STEM_SUBTREE_WIDTH];
@@ -129,11 +134,12 @@ impl Node {
                 H::merkelize(H::encode(stem), level[0])
             }
             Node::Internal { left, right } => {
-                let left_hash = left.as_ref().map_or(H::zero(), |l| l.merkelize::<H>());
-                let right_hash = right.as_ref().map_or(H::zero(), |r| r.merkelize::<H>());
+                let left_hash = left.as_ref().map_or(H::zero(), |l| l.merkelize());
+                let right_hash = right.as_ref().map_or(H::zero(), |r| r.merkelize());
                 H::merkelize(left_hash, right_hash)
             }
             Node::Empty => H::zero(),
+            Node::HashedSubtree(hash) => *hash,
         }
     }
 }

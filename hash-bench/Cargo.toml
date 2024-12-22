@@ -4,12 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-p3-koala-bear = { git = "https://github.com/Plonky3/Plonky3", rev = "0b18480" }
-p3-baby-bear = { git = "https://github.com/Plonky3/Plonky3", rev = "0b18480" }
-p3-mersenne-31 = { git = "https://github.com/Plonky3/Plonky3", rev = "0b18480" }
-p3-symmetric = { git = "https://github.com/Plonky3/Plonky3", rev = "0b18480" }
-p3-monty-31 = { git = "https://github.com/Plonky3/Plonky3", rev = "0b18480" }
-p3-field = { git = "https://github.com/Plonky3/Plonky3", rev = "0b18480" }
+p3-koala-bear = { git = "https://github.com/Plonky3/Plonky3", rev = "784b7dd" }
+p3-baby-bear = { git = "https://github.com/Plonky3/Plonky3", rev = "784b7dd" }
+p3-mersenne-31 = { git = "https://github.com/Plonky3/Plonky3", rev = "784b7dd" }
+p3-symmetric = { git = "https://github.com/Plonky3/Plonky3", rev = "784b7dd" }
+p3-monty-31 = { git = "https://github.com/Plonky3/Plonky3", rev = "784b7dd" }
+p3-field = { git = "https://github.com/Plonky3/Plonky3", rev = "784b7dd" }
 
 blake3 = "1.5.5"
 tiny-keccak = { version = "2.0.2", features = ["keccak"] }

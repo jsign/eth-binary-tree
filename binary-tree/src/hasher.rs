@@ -1,11 +1,11 @@
-use crate::VALUE_LENGTH;
+use crate::types::Value;
 
 pub trait Hasher {
     type Hash: Copy;
 
     fn encode(value: &[u8]) -> Self::Hash;
     fn merkelize(a: Self::Hash, b: Self::Hash) -> Self::Hash;
-    fn hash_value(value: &[u8; VALUE_LENGTH]) -> Self::Hash;
+    fn hash_value(value: &Value) -> Self::Hash;
     fn zero() -> Self::Hash;
 }
 
@@ -24,8 +24,8 @@ impl Hasher for Blake3Hasher {
         blake3::hash(&input).into()
     }
 
-    fn hash_value(value: &[u8; VALUE_LENGTH]) -> Self::Hash {
-        blake3::hash(value).into()
+    fn hash_value(value: &Value) -> Self::Hash {
+        blake3::hash(&value.0).into()
     }
 
     fn zero() -> Self::Hash {

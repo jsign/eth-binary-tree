@@ -13,10 +13,9 @@ pub type Blake3Tree = Tree<hasher::Blake3Hasher>;
 
 #[cfg(test)]
 mod tests {
-    use hasher::{Blake3Hasher, Hasher};
-    use types::Key;
-
     use super::*;
+    use hasher::{Blake3Hasher, Hasher};
+    use types::{Key, Value};
 
     // The following are tests mirroring the existing tests
     // in the Python spec implementation (https://github.com/jsign/binary-tree-spec)
@@ -32,7 +31,7 @@ mod tests {
     #[test]
     fn single_entry() {
         let mut tree = Blake3Tree::new();
-        tree.insert(Key::new(&[0; 32]), [0x01; 32]);
+        tree.insert(Key([0; 32]), Value([0x01; 32]));
         let hash = tree.merkelize();
         assert_eq!(
             hex::encode(hash),
@@ -42,10 +41,10 @@ mod tests {
     #[test]
     fn two_entries() {
         let mut tree = Blake3Tree::new();
-        tree.insert(Key::new(&[0; 32]), [0x01; 32]);
+        tree.insert(Key([0; 32]), Value([0x01; 32]));
         let mut key = [0u8; 32];
         key[0] = 0x80;
-        tree.insert(Key::new(&key), [0x02; 32]);
+        tree.insert(Key(key), Value([0x02; 32]));
         let hash = tree.merkelize();
         assert_eq!(
             hex::encode(hash),

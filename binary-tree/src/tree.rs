@@ -14,7 +14,7 @@ impl<H: Hasher> Tree<H> {
     }
 
     pub fn insert(&mut self, key: Key, value: Value) {
-        self.root.insert(key, value, 0);
+        self.root.insert(key, value);
     }
 
     pub fn merkelize(&self) -> H::Hash {
